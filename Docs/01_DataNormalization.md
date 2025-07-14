@@ -1,5 +1,4 @@
-# 01_DataNormalization
-### Proteomics Data Normalization and Quality Assessment
+# 01_DataNormalization.R - Proteomics Data Normalization and Quality Assessment
 
 ## Overview
 
@@ -82,13 +81,82 @@ norm_config <- list(
 
 ## Pipeline Steps
 
-- Data Validation
-- Variance Stabilizing Normalization (VSN)
-- Scaling and Centering
-- Outlier Detection
-- Quality Assessment Visualizations
+### 1. Data Validation
+```r
+# Check if input data exists
+if (!exists("mat_clean")) {
+  stop("Input data 'mat_clean' not found. Please run 00_PreprocessData.R first.")
+}
+
+# Validate input data structure
+validate_normalization_input(mat_clean)
+```
+
+### 2. Variance Stabilizing Normalization (VSN)
+```r
+# Apply VSN for intensity-dependent variance stabilization
+vsn_fit <- vsn2(mat_clean)
+mat_norm <- predict(vsn_fit, mat_clean)
+
+# Analyze VSN effect
+analyze_normalization_effect(mat_clean, mat_norm, "VSN")
+```
+
+### 3. Scaling and Centering
+```r
+# Apply Z-score scaling and centering
+mat_scaled <- t(scale(t(mat_norm), 
+                      center = norm_config$center_data, 
+                      scale = norm_config$scale_data))
+
+# Analyze scaling effect
+analyze_normalization_effect(mat_norm, mat_scaled, "Z-score scaling")
+```
+
+### 4. Outlier Detection
+```r
+# Perform PCA for outlier detection
+pca_tmp <- prcomp(t(mat_scaled), center = FALSE, scale. = FALSE)
+pc_scores <- pca_tmp$x[, 1:norm_config$pca_components, drop = FALSE]
+
+# Calculate Mahalanobis distance
+dist_z <- rowSums(scale(pc_scores)^2)
+outliers <- which(dist_z > norm_config$outlier_threshold)
+
+# Remove outliers if detected
+if (length(outliers) > 0) {
+  outlier_samples <- rownames(pc_scores)[outliers]
+  mat_scaled <- mat_scaled[, -outliers, drop = FALSE]
+  sample_anno <- sample_anno[-match(outlier_samples, rownames(sample_anno)), , drop = FALSE]
+}
+```
+
+### 5. Quality Assessment Visualizations
+```r
+# PCA for quality assessment
+pca_res <- prcomp(t(mat_scaled), center = TRUE, scale. = FALSE)
+pca_plot <- fviz_pca_ind(pca_res,
+                          geom.ind = "point",
+                          col.ind = sample_anno$Group,
+                          addEllipses = norm_config$pca_ellipses,
+                          legend.title = "Group",
+                          title = "PCA: Sample Quality Assessment")
+
+# Heatmap of top variable proteins
+top_proteins <- names(sort(rowVars(mat_scaled), decreasing = TRUE))[1:norm_config$top_variable_proteins]
+heatmap_plot <- pheatmap(mat_scaled[top_proteins, ],
+                         annotation_col = sample_anno["Group", drop = FALSE],
+                         scale = "row",
+                         show_rownames = TRUE,
+                         border_color = "white",
+                         cellwidth = norm_config$heatmap_cell_size,
+                         cellheight = norm_config$heatmap_cell_size,
+                         show_colnames = FALSE,
+                         main = sprintf("Top %d Variable Proteins", norm_config$top_variable_proteins))
+```
 
 ## Output Objects
+
 ### Primary Outputs
 - `mat_scaled`: Normalized and scaled intensity matrix (proteins × samples)
 - `mat_norm`: VSN-normalized matrix (before scaling)
@@ -100,6 +168,40 @@ norm_config <- list(
 
 ### Configuration and Metadata
 - `norm_config`: Configuration parameters used
+
+## Example Output
+
+```
+[14:31:00] NORM_INFO: Starting proteomics data normalization pipeline
+[14:31:00] NORM_INFO: Input validation passed: 1950 proteins × 45 samples
+[14:31:00] NORM_INFO: === VARIANCE STABILIZING NORMALIZATION ===
+[14:31:01] NORM_INFO: Applying VSN for intensity-dependent variance stabilization
+[14:31:01] NORM_INFO: VSN - Before: mean=12.456, sd=2.345, var=5.498
+[14:31:01] NORM_INFO: VSN - After:  mean=12.123, sd=1.234, var=1.523
+[14:31:01] NORM_INFO: VSN completed: 1950 proteins × 45 samples
+[14:31:01] NORM_INFO: === SCALING AND CENTERING ===
+[14:31:01] NORM_INFO: Applying Z-score scaling and centering
+[14:31:01] NORM_INFO: Z-score scaling - Before: mean=12.123, sd=1.234, var=1.523
+[14:31:01] NORM_INFO: Z-score scaling - After:  mean=0.000, sd=1.000, var=1.000
+[14:31:01] NORM_INFO: Scaling completed: 1950 proteins × 45 samples
+[14:31:01] NORM_INFO: === OUTLIER DETECTION ===
+[14:31:01] NORM_INFO: Performing PCA-based outlier detection
+[14:31:01] NORM_INFO: Outlier detection: 45 samples analyzed, threshold = 9.0
+[14:31:01] NORM_INFO: No outliers detected; all samples retained
+[14:31:02] NORM_INFO: === QUALITY ASSESSMENT VISUALIZATIONS ===
+[14:31:02] NORM_INFO: Generating PCA plot for quality assessment
+[14:31:02] NORM_INFO: Generating heatmap of top variable proteins
+[14:31:02] NORM_INFO: === NORMALIZATION SUMMARY ===
+[14:31:02] NORM_INFO: Final normalized dataset: 1950 proteins × 45 samples
+[14:31:02] NORM_INFO: Total variance explained by all PCs: 100.0%
+[14:31:02] NORM_INFO: PC1 explains 35.2% of variance
+[14:31:02] NORM_INFO: PC2 explains 18.7% of variance
+[14:31:02] NORM_INFO: Data quality metrics:
+[14:31:02] NORM_INFO: - Mean intensity: 0.000
+[14:31:02] NORM_INFO: - Standard deviation: 1.000
+[14:31:02] NORM_INFO: - Coefficient of variation: 0.000
+[14:31:02] NORM_INFO: Normalization pipeline completed successfully
+```
 
 ## Quality Metrics
 
@@ -140,6 +242,39 @@ norm_config <- list(
 - `"VSN failed to converge"`: Check data quality or try alternative normalization
 - `"Outlier threshold too strict/lenient"`: Adjust `outlier_threshold` parameter
 
+## Usage
+
+### Basic Usage
+```r
+# Run the normalization pipeline
+source("01_DataNormalization.R")
+
+# Access normalized data
+dim(mat_scaled)  # Check dimensions
+head(mat_scaled) # View first few rows
+```
+
+### Custom Configuration
+```r
+# Modify configuration before running
+norm_config$outlier_threshold <- 12  # More lenient outlier detection
+norm_config$top_variable_proteins <- 100  # More proteins in heatmap
+norm_config$save_plots <- TRUE  # Save plots to files
+
+# Run pipeline with custom settings
+source("01_DataNormalization.R")
+```
+
+### Advanced Usage
+```r
+# Access VSN fit for new data
+new_data_norm <- predict(vsn_fit, new_data_matrix)
+
+# Use PCA results for additional analysis
+pca_scores <- pca_res$x
+pca_loadings <- pca_res$rotation
+```
+
 ## Next Steps
 
 After running this normalization pipeline, the scaled data (`mat_scaled`) is ready for:
@@ -150,3 +285,56 @@ After running this normalization pipeline, the scaled data (`mat_scaled`) is rea
 4. **Machine learning applications**: Classification, regression, or feature selection
 5. **Network analysis**: Protein-protein interaction networks
 6. **Biomarker discovery**: Identification of diagnostic or prognostic markers
+
+## Technical Notes
+
+### VSN Implementation
+- **Statistical foundation**: Based on generalized log transformation
+- **Intensity-dependent**: Adapts to local variance patterns
+- **Robust estimation**: Handles outliers and extreme values
+
+### Outlier Detection Methodology
+- **PCA-based**: Uses principal components for dimensionality reduction
+- **Mahalanobis distance**: Multivariate distance measure
+- **Configurable threshold**: Adjustable sensitivity for outlier detection
+
+### Performance Considerations
+- **Memory efficient**: Optimized for large proteomics datasets
+- **Fast execution**: Efficient matrix operations
+- **Scalable**: Handles datasets with thousands of proteins and samples
+
+### Reproducibility
+- **VSN fit object**: Can be applied to new data
+- **Detailed logging**: Timestamped progress tracking
+- **Configuration tracking**: All parameters documented and accessible
+
+## Troubleshooting
+
+### Common Issues
+1. **VSN convergence**: If VSN fails, check data quality or try log transformation
+2. **Outlier detection**: Adjust threshold if too many/few samples flagged
+3. **Memory issues**: For large datasets, increase R memory limit
+4. **Plot generation**: Ensure sufficient memory for visualization
+
+### Performance Tips
+1. **Large datasets**: Consider processing in batches
+2. **Memory optimization**: Close unnecessary R objects before running
+3. **Plot saving**: Use `save_plots = TRUE` for publication-quality figures
+
+### Alternative Approaches
+1. **Log transformation**: Use `log2()` if VSN fails
+2. **Quantile normalization**: Alternative to VSN for some datasets
+3. **Robust scaling**: Use median-based scaling for outlier-resistant normalization
+
+## Citation
+
+If you use this normalization pipeline in your research, please cite:
+
+```
+Joseph, K. (2024). Proteomics Data Normalization Pipeline. 
+GitHub repository. https://github.com/yourusername/proteomics-preprocessing
+```
+
+## Contact
+
+For questions or issues with this normalization pipeline, please open an issue on GitHub or contact the maintainer. 
