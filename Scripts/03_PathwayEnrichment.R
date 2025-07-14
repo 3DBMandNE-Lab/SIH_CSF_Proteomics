@@ -10,7 +10,7 @@
 # - Handles both over-representation analysis (ORA) and GSEA approaches
 #
 # Author: Kevin Joseph
-# Date: 2024
+# Date: 07/2024
 # 
 # Dependencies:
 # - clusterProfiler: Gene set enrichment analysis
