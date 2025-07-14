@@ -15,11 +15,6 @@ This pipeline implements a systematic approach to proteomics data preprocessing 
 
 ## Requirements
 
-### R Packages
-```r
-install.packages(c("readxl", "limma", "vsn", "tidyverse", "pheatmap", "factoextra"))
-```
-
 ### Data Format
 The pipeline expects an Excel file with two sheets:
 - **Raw_Intensity**: Contains protein intensity data with columns for gene names and sample intensities
