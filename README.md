@@ -1,163 +1,264 @@
-# Proteomics Data Analysis Pipeline
+# Proteomics Analysis Pipeline
 
-A comprehensive R pipeline for preprocessing proteomics intensity data with robust filtering, validation, and detailed logging.
+[![R](https://img.shields.io/badge/R-4.0+-blue.svg)](https://www.r-project.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+> A R pipeline for proteomics data analysis from preprocessing to biological interpretation
 
 ## Overview
 
-This pipeline implements a systematic approach to proteomics data preprocessing with the following key features:
+This repository provides a comprehensive, end-to-end pipeline for proteomics data analysis. From raw intensity data to biological interpretation, this pipeline implements proteomics data processing, statistical analysis, and functional interpretation.
 
-- **Aggressive protein filtering**: Removes proteins with excessive missingness (>20% by default)
-- **Minimal sample removal**: Only removes samples with extreme missingness (>50% by default)
-- **Comprehensive validation**: File structure and data integrity checks
-- **Detailed logging**: Step-by-step progress tracking with timestamps
-- **Configurable parameters**: Easy modification of thresholds and settings
-- **Reproducible analysis**: Session information capture for reproducibility
+### What This Pipeline Does
 
-## Requirements
+```
+Raw Data → Preprocessing → Normalization → Differential Analysis → Pathway Enrichment → Module Discovery → Classification
+```
 
-### Data Format
-The pipeline expects an Excel file with two sheets:
-- **Raw_Intensity**: Contains protein intensity data with columns for gene names and sample intensities
-- **SampleInfo**: Contains sample metadata with a "SampleID" column
+### Key Capabilities
+
+- **Data Preprocessing**: Robust filtering and quality control
+- **Statistical Analysis**: Differential abundance testing with multiple testing correction
+- **Biological Interpretation**: Pathway enrichment and functional analysis
+- **Machine Learning**: Module discovery (NMF) and classification (PLS-DA)
+
 
 ## Quick Start
 
-1. **Prepare your data**: Place your Excel file in the `data/` directory as `Raw_Proteomics.xlsx`
+### Prerequisites
 
-2. **Run the preprocessing pipeline**:
+- **R** (version 4.0 or higher)
+- **RStudio** (recommended)
+- **Git**
+
+### Basic Usage
+
+1. **Prepare your data**:
+   ```r
+   # Place your Excel file in data/ directory
+   # Format: Raw_Intensity and SampleInfo sheets
+   ```
+
+2. **Run the complete pipeline**:
+   ```r
+   # Preprocessing
+   source("00_PreprocessData.R")
+   
+   # Normalization
+   source("01_DataNormalization.R")
+   
+   # Differential analysis
+   source("02_DifferentialTesting.R")
+   
+   # Pathway enrichment
+   source("03_PathwayEnrichment.R")
+   
+   # Module discovery
+   source("04_NMF.R")
+   
+   # Classification
+   source("05_PLSDA.R")
+   ```
+
+3. **Access results**:
+   ```r
+   # All results are saved in results/ directory
+   # R objects available in workspace
+   ```
+
+## Installation
+
+### System Requirements
+
+- **R**: 4.0 or higher
+- **Memory**: 8GB RAM (16GB recommended for large datasets)
+- **Storage**: 2GB free space
+- **Operating System**: Windows, macOS, or Linux
+
+### Dependencies
+
+The pipeline requires the following R packages:
+
 ```r
-source("00_PreprocessData.R")
+# Core packages
+install.packages(c(
+  "readxl",      # Excel file reading
+  "limma",       # Differential analysis
+  "vsn",         # Variance stabilization
+  "tidyverse",   # Data manipulation
+  "pheatmap",    # Heatmap visualization
+  "factoextra",  # PCA analysis
+  "mixOmics",    # PLS-DA analysis
+  "clusterProfiler", # GO enrichment
+  "org.Hs.eg.db",   # Human annotation
+  "NMF",         # Non-negative matrix factorization
+  "ggplot2",     # Plotting
+  "dplyr",       # Data manipulation
+  "patchwork"    # Plot arrangement
+))
 ```
 
-3. **Run the normalization pipeline**:
-```r
-source("01_DataNormalization.R")
+### Data Format
+
+The pipeline expects an Excel file with the following structure:
+
+```
+Raw_Proteomics.xlsx
+├── Raw_Intensity
+│   ├── Gene (protein identifiers)
+│   ├── Sample1 (intensity values)
+│   ├── Sample2 (intensity values)
+│   └── ...
+└── SampleInfo
+    ├── SampleID (matching column names)
+    ├── Group (experimental conditions)
+    └── Additional metadata
 ```
 
-4. **Run the differential analysis pipeline**:
-```r
-source("02_DifferentialTesting.R")
-```
+## Usage
 
-5. **Access results**: 
-   - Preprocessed data: `mat_clean` (cleaned intensity matrix)
-   - Normalized data: `mat_scaled` (normalized and scaled matrix)
-   - Differential results: `de_res` (differential abundance results)
-   - Sample annotations: `sample_anno` (updated after outlier removal)
+### Configuration
 
-## Configuration
-
-Modify the `config` list in the script to adjust parameters:
+Each pipeline includes a comprehensive configuration system:
 
 ```r
+# Example configuration
 config <- list(
-  # File paths
+  # Input/Output paths
   input_file = "data/Raw_Proteomics.xlsx",
+  output_dir = "results/",
   
-  # Filtering thresholds
-  gene_missing_threshold = 0.20,    # 20% missing threshold for genes
-  sample_missing_threshold = 0.50,  # 50% missing threshold for samples
+  # Analysis parameters
+  gene_missing_threshold = 0.20,    # 20% missing threshold
+  sample_missing_threshold = 0.50,  # 50% missing threshold
+  pvalue_cutoff = 0.05,            # Statistical significance
+  fdr_cutoff = 0.05,               # False discovery rate
   
-  # Output settings
-  verbose = TRUE,                   # Detailed logging
-  save_intermediate = FALSE         # Save session info
+  # Visualization
+  plot_width = 12,
+  plot_height = 10,
+  dpi = 300,
+  
+  # Reproducibility
+  seed = 123
 )
 ```
 
-## Pipeline Steps
+### Individual Pipelines
 
-### Preprocessing Pipeline (00_PreprocessData.R)
+#### 1. Data Preprocessing (`00_PreprocessData.R`)
+```r
+# Clean and validate raw proteomics data
+source("00_PreprocessData.R")
+# Output: mat_clean, sample_anno, quality metrics
+```
 
-#### 1. Data Import and Validation
-- Validates file existence and Excel structure
-- Checks for required sheets
-- Imports raw intensity data and sample annotations
+#### 2. Data Normalization (`01_DataNormalization.R`)
+```r
+# Normalize and scale data for analysis
+source("01_DataNormalization.R")
+# Output: mat_scaled, normalization plots, outlier detection
+```
 
-#### 2. Data Matrix Construction
-- Converts raw data to numeric matrix format
-- Handles duplicate gene names
-- Creates protein × sample intensity matrix
+#### 3. Differential Analysis (`02_DifferentialTesting.R`)
+```r
+# Identify differentially abundant proteins
+source("02_DifferentialTesting.R")
+# Output: de_res, volcano plots, statistical summaries
+```
 
-#### 3. Missingness Analysis and Filtering
-- **Gene-level filtering**: Removes proteins with >20% missing values
-- **Sample-level analysis**: Identifies samples with excessive missingness
-- **Final cleanup**: Removes any remaining genes with NA values
+#### 4. Pathway Enrichment (`03_PathwayEnrichment.R`)
+```r
+# Biological interpretation of results
+source("03_PathwayEnrichment.R")
+# Output: ego_up, ego_down, gsea_res, enrichment plots
+```
 
-#### 4. Quality Assessment
-- Calculates retention statistics for genes and samples
-- Reports data completeness metrics
-- Provides detailed summary of filtering results
+#### 5. Module Discovery (`04_NMF.R`)
+```r
+# Unsupervised module discovery
+source("04_NMF.R")
+# Output: nmf_res, W, H, module_assign, module plots
+```
 
-### Normalization Pipeline (01_DataNormalization.R)
+#### 6. Classification (`05_PLSDA.R`)
+```r
+# Supervised classification analysis
+source("05_PLSDA.R")
+# Output: plsda_res, vip_scores, classification plots
+```
 
-#### 1. Variance Stabilizing Normalization (VSN)
-- Applies VSN for intensity-dependent variance stabilization
-- Handles heteroscedasticity in proteomics data
-- Provides statistical analysis of normalization effects
+## Pipeline Overview
 
-#### 2. Scaling and Centering
-- Performs Z-score scaling and centering
-- Prepares data for downstream statistical analysis
-- Analyzes scaling effects on data distribution
+```mermaid
+graph TD
+    A[Raw Data] --> B[Preprocessing]
+    B --> C[Normalization]
+    C --> D[Differential Analysis]
+    D --> E[Pathway Enrichment]
+    C --> F[Module Discovery]
+    C --> G[Classification]
+    E --> H[Biological Interpretation]
+    F --> H
+    G --> H
+```
 
-#### 3. Outlier Detection
-- Implements PCA-based outlier detection
-- Uses Mahalanobis distance with configurable thresholds
-- Automatically removes outlier samples
+### Pipeline Details
 
-#### 4. Quality Assessment Visualizations
-- Generates PCA plots for sample quality assessment
-- Creates heatmaps of top variable proteins
-- Provides comprehensive quality metrics
+| Pipeline | Purpose | Key Outputs | Dependencies |
+|----------|---------|-------------|--------------|
+| **Preprocessing** | Data cleaning and validation | `mat_clean`, quality metrics | `readxl`, `tidyverse` |
+| **Normalization** | Variance stabilization and scaling | `mat_scaled`, PCA plots | `vsn`, `factoextra` |
+| **Differential** | Statistical analysis | `de_res`, volcano plots | `limma`, `ggplot2` |
+| **Enrichment** | Biological interpretation | `ego_up`, `ego_down`, `gsea_res` | `clusterProfiler` |
+| **NMF** | Module discovery | `nmf_res`, `W`, `H` | `NMF`, `pheatmap` |
+| **PLS-DA** | Classification | `plsda_res`, `vip_scores` | `mixOmics` |
 
-### Differential Analysis Pipeline (02_DifferentialTesting.R)
+## Output
 
-#### 1. Experimental Design
-- Creates design matrix for group comparisons
-- Handles various experimental designs
-- Validates group assignments and sample sizes
+### Main Results
 
-#### 2. Statistical Analysis
-- Implements empirical Bayes moderated t-tests
-- Applies multiple testing correction (FDR)
-- Provides robust statistical inference
+After running the complete pipeline, you'll have:
 
-#### 3. Results Analysis
-- Identifies differentially abundant proteins
-- Calculates effect sizes and significance
-- Generates comprehensive statistical summaries
+- **Preprocessed data**: `mat_clean` (cleaned intensity matrix)
+- **Normalized data**: `mat_scaled` (normalized and scaled matrix)
+- **Differential results**: `de_res` (differential abundance results)
+- **Enrichment results**: `ego_up`, `ego_down`, `gsea_res` (pathway analysis)
+- **Module results**: `nmf_res`, `W`, `H`, `module_assign` (module discovery)
+- **Classification results**: `plsda_res`, `splsda_res`, `vip_scores` (classification)
 
-#### 4. Visualization
-- Creates publication-ready volcano plots
-- Generates heatmaps of top differential proteins
-- Provides quality assessment visualizations
+### File Structure
 
-## Output Objects
-
-After running the preprocessing pipeline, the following objects are available:
-
-- `mat_clean`: Cleaned intensity matrix (proteins × samples)
-- `sample_anno`: Sample annotation data frame
-- `config`: Configuration parameters used
-- `gene_missing_rates`: Original gene missingness rates
-- `sample_missing_rates`: Sample missingness rates after gene filtering
-
-After running the normalization pipeline, additional objects are available:
-
-- `mat_scaled`: Normalized and scaled intensity matrix (proteins × samples)
-- `mat_norm`: VSN-normalized matrix (before scaling)
-- `vsn_fit`: VSN fit object for future predictions
-- `pca_res`: PCA results for quality assessment
-- `norm_config`: Normalization configuration parameters used
-
-After running the differential analysis pipeline, additional objects are available:
-
-- `de_res`: Differential abundance results (limma topTable output)
-- `fit2`: Fitted limma model with empirical Bayes results
-- `volcano_plot`: Enhanced volcano plot with background shading
-- `heatmap_plot`: Heatmap of top differential proteins
-- `diff_config`: Differential analysis configuration parameters used
+```
+results/
+├── preprocessing/
+│   ├── preprocessed_data.RData
+│   ├── quality_metrics.csv
+│   └── preprocessing_summary.txt
+├── normalization/
+│   ├── normalized_data.RData
+│   ├── pca_plots.pdf
+│   └── normalization_summary.txt
+├── differential/
+│   ├── differential_results.RData
+│   ├── volcano_plots.pdf
+│   └── differential_summary.txt
+├── pathway/
+│   ├── enrichment_results.RData
+│   ├── enrichment_plots.pdf
+│   └── pathway_summary.txt
+├── nmf/
+│   ├── nmf_results.RData
+│   ├── module_plots.pdf
+│   └── nmf_summary.txt
+└── plsda/
+    ├── plsda_results.RData
+    ├── classification_plots.pdf
+    └── plsda_summary.txt
+```
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
