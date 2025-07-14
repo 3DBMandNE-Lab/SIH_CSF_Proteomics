@@ -22,8 +22,8 @@
 # Dependencies: NMF, pheatmap, dplyr, ggplot2, clusterProfiler, org.Hs.eg.db,
 #              patchwork, ggridges, ggalluvial, cluster, ggpubr, tidytext
 #
-# Author: [Your Name]
-# Date: [Current Date]
+# Author: Kevin Joseph
+# Date: 07/2025
 # Version: 1.0
 # =============================================================================
 
