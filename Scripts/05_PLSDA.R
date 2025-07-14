@@ -20,8 +20,8 @@
 #
 # Dependencies: mixOmics, ggplot2, dplyr, clusterProfiler, org.Hs.eg.db
 #
-# Author: [Your Name]
-# Date: [Current Date]
+# Author: Kevin Joseph
+# Date: 07/2025
 # Version: 1.0
 # =============================================================================
 
