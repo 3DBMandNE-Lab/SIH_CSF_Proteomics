@@ -3,7 +3,6 @@
 [![R](https://img.shields.io/badge/R-4.0+-blue.svg)](https://www.r-project.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> A R pipeline for proteomics data analysis from preprocessing to biological interpretation
 
 ## Overview
 
