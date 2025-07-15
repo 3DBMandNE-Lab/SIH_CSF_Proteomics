@@ -229,7 +229,7 @@ After running the complete pipeline, you'll have:
 ### File Structure
 
 ```
-results/
+Results/
 ├── preprocessing/
 │   ├── preprocessed_data.RData
 │   ├── quality_metrics.csv
