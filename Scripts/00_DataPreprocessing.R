@@ -1,28 +1,26 @@
-
 # =============================================================================
 # Proteomics Data Preprocessing Pipeline
 # =============================================================================
 # 
-# Description: Comprehensive preprocessing pipeline for proteomics data analysis
-# - Reads raw proteomics intensity data from Excel files
-# - Performs aggressive protein filtering based on missingness thresholds
-# - Implements minimal sample removal strategy (only extreme cases)
-# - Handles data validation and error checking
-# - Provides detailed logging of preprocessing steps
+# This script performs comprehensive preprocessing of proteomics intensity data
+# including data validation, missingness filtering, and quality control.
 #
-# Author: Kevin Joseph
-# Date: 07/2024
-# 
-# Dependencies:
-# - readxl: Excel file reading
-# - limma: Linear models for microarray data
-# - vsn: Variance stabilizing normalization
-# - tidyverse: Data manipulation and visualization
-# - pheatmap: Heatmap generation
-# - factoextra: PCA visualization
+# Input Requirements:
+#   - Excel file with "Raw_Intensity" and "SampleInfo" sheets
+#   - Raw_Intensity: protein intensity data with gene names and sample intensities
+#   - SampleInfo: sample metadata with SampleID column
 #
-# Input: Excel file with "Raw_Intensity" and "SampleInfo" sheets
-# Output: Cleaned intensity matrix ready for downstream analysis
+# Outputs:
+#   - mat_clean: Cleaned intensity matrix (proteins × samples)
+#   - sample_anno: Sample annotation data frame
+#   - Quality metrics and preprocessing summary
+#   - Comprehensive logging of all preprocessing steps
+#
+# Dependencies: readxl, limma, vsn, tidyverse, pheatmap, factoextra
+#
+# Author: Dr.-Ing. Kevin Joseph, Neurosurgery, Medical Center - University of Freiburg
+# Date: 2024
+# Version: 1.0
 # =============================================================================
 
 # =============================================================================
