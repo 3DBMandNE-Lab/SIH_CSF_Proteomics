@@ -22,8 +22,8 @@
 # Dependencies: NMF, pheatmap, dplyr, ggplot2, clusterProfiler, org.Hs.eg.db,
 #              patchwork, ggridges, ggalluvial, cluster, ggpubr, tidytext
 #
-# Author: Kevin Joseph
-# Date: 07/2025
+# Author: Dr.-Ing. Kevin Joseph, Neurosurgery, Medical Center - University of Freiburg
+# Date: 2024
 # Version: 1.0
 # =============================================================================
 

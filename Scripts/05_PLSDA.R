@@ -20,8 +20,8 @@
 #
 # Dependencies: mixOmics, ggplot2, dplyr, clusterProfiler, org.Hs.eg.db
 #
-# Author: Kevin Joseph
-# Date: 07/2025
+# Author: Dr.-Ing. Kevin Joseph, Neurosurgery, Medical Center - University of Freiburg
+# Date: 2024
 # Version: 1.0
 # =============================================================================
 

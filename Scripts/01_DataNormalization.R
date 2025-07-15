@@ -1,26 +1,27 @@
 # =============================================================================
-# Proteomics Data Normalization and Quality Assessment
+# Proteomics Data Normalization Pipeline
 # =============================================================================
 # 
-# Description: Advanced normalization and quality assessment pipeline for proteomics data
-# - Applies Variance Stabilizing Normalization (VSN) for intensity-dependent variance
-# - Performs Z-score scaling and centering for downstream analysis
-# - Implements PCA-based outlier detection with configurable thresholds
-# - Generates comprehensive quality assessment visualizations
-# - Provides detailed logging and progress tracking
+# This script performs comprehensive normalization of preprocessed proteomics data
+# including variance stabilization, scaling, outlier detection, and quality assessment.
 #
-# Author: Kevin Joseph
-# Date: 07/2024
-# 
-# Dependencies:
-# - vsn: Variance stabilizing normalization
-# - matrixStats: Matrix statistics for variance calculation
-# - factoextra: PCA visualization
-# - pheatmap: Heatmap generation
-# - tidyverse: Data manipulation and visualization
+# Input Requirements:
+#   - mat_clean: Cleaned intensity matrix from preprocessing pipeline
+#   - sample_anno: Sample annotation data frame
 #
-# Input: mat_clean (from 00_PreprocessData.R)
-# Output: Normalized data matrix and quality assessment plots
+# Outputs:
+#   - mat_scaled: Normalized and scaled intensity matrix (proteins × samples)
+#   - mat_norm: VSN-normalized matrix (before scaling)
+#   - vsn_fit: VSN fit object for future predictions
+#   - pca_res: PCA results for quality assessment
+#   - Quality assessment visualizations and metrics
+#   - Comprehensive logging of all normalization steps
+#
+# Dependencies: vsn, matrixStats, factoextra, pheatmap, tidyverse
+#
+# Author: Dr.-Ing. Kevin Joseph, Neurosurgery, Medical Center - University of Freiburg
+# Date: 2024
+# Version: 1.0
 # =============================================================================
 
 # =============================================================================

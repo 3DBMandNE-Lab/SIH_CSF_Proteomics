@@ -2,27 +2,28 @@
 # Proteomics Pathway Enrichment Analysis Pipeline
 # =============================================================================
 # 
-# Description: Comprehensive pathway enrichment analysis for proteomics data
-# - Performs Gene Ontology (GO) enrichment analysis using clusterProfiler
-# - Implements Gene Set Enrichment Analysis (GSEA) for pathway discovery
-# - Generates publication-ready visualizations including network plots
-# - Provides integrated enrichment dashboard with multiple visualization types
-# - Handles both over-representation analysis (ORA) and GSEA approaches
+# This script performs comprehensive pathway enrichment analysis of differential
+# proteomics results using Gene Ontology and Gene Set Enrichment Analysis.
 #
-# Author: Kevin Joseph
-# Date: 07/2024
-# 
-# Dependencies:
-# - clusterProfiler: Gene set enrichment analysis
-# - enrichplot: Enhanced enrichment visualizations
-# - GOplot: Circular network visualizations
-# - ggplot2: Advanced plotting
-# - patchwork: Multi-panel plot assembly
-# - viridis: Color palettes
-# - org.Hs.eg.db: Human gene annotation database
+# Input Requirements:
+#   - de_res: Differential abundance results from differential analysis pipeline
+#   - mat_scaled: Normalized intensity matrix for background analysis
+#   - sample_anno: Sample annotation data frame
 #
-# Input: de_res (from 02_DifferentialTesting.R), mat_scaled, sample_anno
-# Output: Enrichment analysis results and comprehensive visualizations
+# Outputs:
+#   - ego_up: GO enrichment results for up-regulated genes
+#   - ego_down: GO enrichment results for down-regulated genes
+#   - gsea_res: GSEA results for all genes
+#   - gene_sets: Prepared gene lists for analysis
+#   - Comprehensive visualizations (volcano plots, network plots, heatmaps)
+#   - Integrated enrichment dashboard
+#   - Comprehensive logging of all analysis steps
+#
+# Dependencies: clusterProfiler, enrichplot, GOplot, ggplot2, patchwork, viridis, org.Hs.eg.db
+#
+# Author: Dr.-Ing. Kevin Joseph, Neurosurgery, Medical Center - University of Freiburg
+# Date: 2024
+# Version: 1.0
 # =============================================================================
 
 # =============================================================================
