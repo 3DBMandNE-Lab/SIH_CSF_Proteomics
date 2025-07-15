@@ -81,19 +81,19 @@ The pipeline requires the following R packages:
 ```r
 # Core packages
 install.packages(c(
-  "readxl",      # Excel file reading
-  "limma",       # Differential analysis
-  "vsn",         # Variance stabilization
-  "tidyverse",   # Data manipulation
-  "pheatmap",    # Heatmap visualization
-  "factoextra",  # PCA analysis
-  "mixOmics",    # PLS-DA analysis
+  "readxl",          # Excel file reading
+  "limma",           # Differential analysis
+  "vsn",             # Variance stabilization
+  "tidyverse",       # Data manipulation
+  "pheatmap",        # Heatmap visualization
+  "factoextra",      # PCA analysis
+  "mixOmics",        # PLS-DA analysis
   "clusterProfiler", # GO enrichment
-  "org.Hs.eg.db",   # Human annotation
-  "NMF",         # Non-negative matrix factorization
-  "ggplot2",     # Plotting
-  "dplyr",       # Data manipulation
-  "patchwork"    # Plot arrangement
+  "org.Hs.eg.db",    # Human annotation
+  "NMF",             # Non-negative matrix factorization
+  "ggplot2",         # Plotting
+  "dplyr",           # Data manipulation
+  "patchwork"        # Plot arrangement
 ))
 ```
 
